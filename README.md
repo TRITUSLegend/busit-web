@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚌 BUSIT: Digital Shuttle Credit System
 
-## Getting Started
+BUSIT is a modern, full-stack Next.js web application designed to completely digitize campus shuttle payments. It eliminates the need for physical cash or hardware scanners by utilizing dynamic QR codes and a software-based live camera scanning portal.
 
-First, run the development server:
+## 🌟 Key Features
 
+- **Software-Based Scanning**: Drivers use a built-in `html5-qrcode` camera portal to scan student passes directly from the web app. No proprietary hardware required!
+- **Dynamic Digital Passes**: Students are automatically assigned a unique QR code boarding pass upon registration.
+- **Secure Architecture**: Built with Next.js App Router, Prisma ORM, and NextAuth.js. Passwords are mathematically hashed via `bcrypt` to prevent plaintext data leaks.
+- **Automated Email Receipts**: Integrated `nodemailer` system automatically sends beautiful HTML email receipts when fares are deducted or wallets are topped up.
+- **Premium UI/UX**: Features a highly refined, professional dark-mode design built from scratch using strict Tailwind CSS utility classes.
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Database**: PostgreSQL (Production via Neon) / SQLite (Local Development)
+- **ORM**: Prisma
+- **Authentication**: NextAuth.js (Credentials Provider)
+- **Styling**: Tailwind CSS v4
+- **QR Engine**: `qrcode` & `html5-qrcode`
+- **Emails**: `nodemailer`
+
+## 🚀 Getting Started Locally
+
+### 1. Prerequisites
+Ensure you have [Node.js](https://nodejs.org/) installed on your machine.
+
+### 2. Installation
+Clone the repository and install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/TRITUSLegend/busit-web.git
+cd busit-web
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Environment Variables
+Create a `.env` file in the root directory and add the following:
+```env
+DATABASE_URL="file:./dev.db"
+NEXTAUTH_SECRET="your_secure_random_string"
+NEXTAUTH_URL="http://localhost:3000"
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Gmail SMTP Configuration for Email Receipts
+SMTP_EMAIL="your_gmail_address@gmail.com"
+SMTP_PASSWORD="your_16_character_app_password"
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Database Setup
+Initialize the Prisma database schema:
+```bash
+npx prisma generate
+npx prisma db push
+```
 
-## Learn More
+### 5. Run the Application
+Start the Next.js development server:
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-To learn more about Next.js, take a look at the following resources:
+## 🧪 How to Test the Scanning Flow
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+To test the core QR scanning functionality without a real shuttle:
+1. Open the app and register a new **Student** account.
+2. Open an **Incognito Window** (or use a separate device) and register a **Driver** account.
+3. On the Driver dashboard, grant camera permissions to activate the Live Scanner.
+4. Point the Driver's camera at the Student's QR code on the other screen.
+5. The system will instantly verify the pass, deduct 20 credits, and email a receipt to the student!
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📦 Production Deployment (Vercel)
+This application is fully ready for serverless deployment on [Vercel](https://vercel.com).
+1. Import your GitHub repository to Vercel.
+2. Provide a cloud PostgreSQL database connection string (e.g., via [Neon](https://neon.tech)) in the `DATABASE_URL` environment variable.
+3. Add your `NEXTAUTH_SECRET` and SMTP credentials.
+4. Deploy! Run `npx prisma db push` locally using your cloud URL to sync the database schema.
