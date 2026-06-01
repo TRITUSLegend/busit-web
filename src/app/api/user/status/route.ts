@@ -44,7 +44,7 @@ export async function POST(req: Request) {
         }
       });
 
-      sendUnblockOtpEmail(user.email, user.name, generatedOtp).catch(console.error);
+      await sendUnblockOtpEmail(user.email, user.name, generatedOtp);
       return NextResponse.json({ success: true, message: 'OTP sent to your email.' });
     }
 
