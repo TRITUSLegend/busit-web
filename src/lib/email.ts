@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 export const sendPaymentReceipt = async (toEmail: string, name: string, amount: number, remainingCredits: number) => {
   if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) return;
 
-  const date = new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+  const date = new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
 
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
@@ -52,7 +52,7 @@ export const sendPaymentReceipt = async (toEmail: string, name: string, amount: 
 export const sendTopUpReceipt = async (toEmail: string, name: string, amount: number, newBalance: number) => {
   if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) return;
 
-  const date = new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+  const date = new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
 
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
