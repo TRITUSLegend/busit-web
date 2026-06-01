@@ -87,3 +87,43 @@ export const sendTopUpReceipt = async (toEmail: string, name: string, amount: nu
     console.error('Error sending topup email:', error);
   }
 };
+
+export const sendUnblockOtpEmail = async (toEmail: string, name: string, otp: string) => {
+  if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) return;
+
+  const date = new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
+
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
+      <div style="background-color: #0a0a0b; padding: 20px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">BUSIT</h1>
+        <p style="color: #a1a1aa; margin: 5px 0 0 0; font-size: 14px;">Digital Shuttle Wallet</p>
+      </div>
+      <div style="padding: 30px 20px; background-color: #ffffff; color: #18181b;">
+        <h2 style="margin-top: 0;">Unblock Request</h2>
+        <p>Hi ${name},</p>
+        <p>We received a request to unblock your BUSIT digital pass.</p>
+        
+        <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center;">
+          <p style="margin: 0 0 10px 0; font-size: 14px; color: #52525b;">Your One-Time Password (OTP)</p>
+          <p style="margin: 0; font-size: 32px; font-weight: bold; letter-spacing: 4px; color: #18181b;">${otp}</p>
+        </div>
+        
+        <p style="font-size: 14px; color: #71717a;">This code will expire in 10 minutes. If you did not request this, please ignore this email and your card will remain blocked securely.</p>
+        
+        <p style="margin-top: 30px; font-size: 14px; color: #71717a;">Date: ${date}</p>
+      </div>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"BUSIT" <${process.env.SMTP_EMAIL}>`,
+      to: toEmail,
+      subject: 'BUSIT: Unblock Card OTP',
+      html: htmlContent,
+    });
+  } catch (error) {
+    console.error('Error sending OTP email:', error);
+  }
+};

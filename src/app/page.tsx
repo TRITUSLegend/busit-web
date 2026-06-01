@@ -11,6 +11,9 @@ export default function Dashboard() {
   const router = useRouter();
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [otpValue, setOtpValue] = useState('');
+  const [otpError, setOtpError] = useState('');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -49,16 +52,50 @@ export default function Dashboard() {
   };
 
   const handleUnblockCard = async () => {
-    if (!confirm('Are you sure you want to unblock your card?')) return;
+    if (!confirm('Are you sure you want to request an unblock OTP?')) return;
     try {
-      await fetch('/api/user/status', {
+      const res = await fetch('/api/user/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'REQUEST_NEW' })
+        body: JSON.stringify({ action: 'REQUEST_OTP' })
       });
-      fetchUserData();
+      const data = await res.json();
+      if (res.ok) {
+        setShowOtpInput(true);
+        setOtpError('');
+      } else {
+        alert(data.error);
+      }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otpValue || otpValue.length !== 6) {
+      setOtpError('Please enter a 6-digit OTP');
+      return;
+    }
+    
+    setOtpError('');
+    try {
+      const res = await fetch('/api/user/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'VERIFY_UNBLOCK', otp: otpValue })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setShowOtpInput(false);
+        setOtpValue('');
+        alert('Card unblocked successfully!');
+        fetchUserData();
+      } else {
+        setOtpError(data.error);
+      }
+    } catch (err) {
+      console.error(err);
+      setOtpError('Failed to verify OTP');
     }
   };
 
@@ -154,12 +191,38 @@ export default function Dashboard() {
               >
                 Block Card
               </button>
+            ) : showOtpInput ? (
+              <div className="flex-1 flex flex-col gap-2">
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    placeholder="Enter 6-digit OTP" 
+                    maxLength={6}
+                    value={otpValue}
+                    onChange={(e) => setOtpValue(e.target.value)}
+                    className="flex-1 p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 text-center tracking-widest"
+                  />
+                  <button 
+                    onClick={handleVerifyOtp}
+                    className="p-3 px-6 rounded-xl bg-emerald-500 text-zinc-950 font-bold hover:bg-emerald-400 transition-colors text-sm"
+                  >
+                    Verify
+                  </button>
+                </div>
+                {otpError && <p className="text-red-400 text-xs text-center">{otpError}</p>}
+                <button 
+                  onClick={() => setShowOtpInput(false)}
+                  className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
             ) : (
               <button 
                 onClick={handleUnblockCard} 
                 className="flex-1 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 font-medium hover:bg-emerald-500/20 transition-colors text-sm"
               >
-                Unblock Card
+                Request Unblock OTP
               </button>
             )}
           </div>
