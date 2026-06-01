@@ -48,6 +48,20 @@ export default function Dashboard() {
     }
   };
 
+  const handleUnblockCard = async () => {
+    if (!confirm('Are you sure you want to unblock your card?')) return;
+    try {
+      await fetch('/api/user/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'REQUEST_NEW' })
+      });
+      fetchUserData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleAddCredits = async () => {
     const amountStr = prompt('Enter credits to add:');
     if (!amountStr) return;
@@ -133,13 +147,21 @@ export default function Dashboard() {
             >
               Add Credits
             </button>
-            <button 
-              onClick={handleBlockCard} 
-              disabled={userData?.cardStatus === 'BLOCKED'} 
-              className="flex-1 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 font-medium hover:bg-red-500/20 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Block Card
-            </button>
+            {userData?.cardStatus === 'ACTIVE' ? (
+              <button 
+                onClick={handleBlockCard} 
+                className="flex-1 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 font-medium hover:bg-red-500/20 transition-colors text-sm"
+              >
+                Block Card
+              </button>
+            ) : (
+              <button 
+                onClick={handleUnblockCard} 
+                className="flex-1 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 font-medium hover:bg-emerald-500/20 transition-colors text-sm"
+              >
+                Unblock Card
+              </button>
+            )}
           </div>
 
           <div>
