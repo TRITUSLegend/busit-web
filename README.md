@@ -2,6 +2,8 @@
 
 BUSIT is a modern, full-stack Next.js web application designed to completely digitize campus shuttle payments. It eliminates the need for physical cash or hardware scanners by utilizing dynamic QR codes and a software-based live camera scanning portal.
 
+Live Link: busit-web.vercel.app
+
 ## 🌟 Key Features
 
 - **Software-Based Scanning**: Drivers use a built-in `html5-qrcode` camera portal to scan student passes directly from the web app. No proprietary hardware required!
