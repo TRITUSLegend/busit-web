@@ -58,7 +58,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           studentId: user.studentId,
           role: user.role,
-        } as any;
+        };
       }
     })
   ],
@@ -66,19 +66,22 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt"
   },
   callbacks: {
+    // `user` is only present on the initial sign-in; afterwards the token is
+    // reused as-is on every request.
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role;
-        token.studentId = (user as any).studentId;
+        token.role = user.role;
+        token.studentId = user.studentId;
       }
       return token;
     },
+    // Copies the JWT claims onto the session object exposed to the app.
     async session({ session, token }) {
       if (token && session.user) {
-        (session.user as any).id = token.id;
-        (session.user as any).role = token.role;
-        (session.user as any).studentId = token.studentId;
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.studentId = token.studentId;
       }
       return session;
     }

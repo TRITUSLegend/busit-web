@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 
 export default function Scanner() {
@@ -29,7 +29,7 @@ export default function Scanner() {
       } else {
         setError(data.error || 'Payment Failed');
       }
-    } catch (err) {
+    } catch {
       setError('An error occurred during payment');
     } finally {
       setLoading(false);
@@ -58,7 +58,7 @@ export default function Scanner() {
           scanner.pause(true);
         }
       },
-      (err) => {
+      () => {
         // ignore noisy scanning errors
       }
     );

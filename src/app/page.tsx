@@ -6,10 +6,27 @@ import { useEffect, useState } from 'react';
 import QRCodeDisplay from '@/components/QRCodeDisplay';
 import Scanner from '@/components/Scanner';
 
+/** One row of the activity list. Negative `amount` is a fare, positive is a top-up. */
+interface UserTransaction {
+  id: string;
+  amount: number;
+  type: string;
+  timestamp: string;
+}
+
+/** Shape returned by `GET /api/user/status`. */
+interface UserStatus {
+  name: string;
+  studentId: string;
+  credits: number;
+  cardStatus: string;
+  transactions: UserTransaction[];
+}
+
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<UserStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [otpValue, setOtpValue] = useState('');
@@ -35,6 +52,10 @@ export default function Dashboard() {
     if (status === 'unauthenticated') {
       router.push('/login');
     } else if (status === 'authenticated') {
+      // Safe despite the rule: fetchUserData's first statement is `await fetch(...)`,
+      // so every setState inside it runs in a later microtask, never synchronously
+      // during this effect body. The linter cannot see through the async boundary.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchUserData();
     }
   }, [status, router]);
@@ -170,8 +191,8 @@ export default function Dashboard() {
 
           <div className="flex flex-col items-center justify-center py-8 bg-zinc-950 rounded-xl border border-zinc-800 mb-6">
             <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-5">Your Boarding Pass</p>
-            {userData?.cardStatus === 'ACTIVE' ? (
-              <QRCodeDisplay studentId={userData?.studentId} />
+            {userData && userData.cardStatus === 'ACTIVE' ? (
+              <QRCodeDisplay studentId={userData.studentId} />
             ) : (
               <div className="w-[200px] h-[200px] flex items-center justify-center border border-red-500/20 rounded-xl bg-red-500/5 text-red-400 font-medium text-center p-4">
                 Card Blocked<br/>Cannot Generate Pass
@@ -231,9 +252,9 @@ export default function Dashboard() {
 
           <div>
             <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3">Recent Activity</h3>
-            {userData?.transactions?.length > 0 ? (
+            {userData && userData.transactions.length > 0 ? (
               <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
-                {userData.transactions.map((tx: any) => (
+                {userData.transactions.map((tx) => (
                   <div key={tx.id} className="flex justify-between items-center p-3.5 bg-zinc-950 rounded-xl border border-zinc-800">
                     <div>
                       <p className="text-sm font-medium text-zinc-200">{tx.type === 'PAYMENT' ? 'Shuttle Ride' : 'Top Up'}</p>

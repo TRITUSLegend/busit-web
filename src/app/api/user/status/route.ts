@@ -75,13 +75,13 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ error: 'Action not handled' }, { status: 500 });
-  } catch (error: any) {
+  } catch (error) {
     console.error('User status error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
@@ -113,7 +113,7 @@ export async function GET(req: Request) {
         transactions: user.transactions
       }
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Fetch user data error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

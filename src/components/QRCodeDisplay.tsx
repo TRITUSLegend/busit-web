@@ -27,6 +27,8 @@ export default function QRCodeDisplay({ studentId }: { studentId: string }) {
 
   return (
     <div className="bg-white p-2 rounded-xl shadow-lg inline-block">
+      {/* next/image cannot optimise a client-generated data: URL, so a plain <img> is correct here. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={src} alt="Student QR Code" className="w-[200px] h-[200px] object-contain rounded-lg" />
     </div>
   );
