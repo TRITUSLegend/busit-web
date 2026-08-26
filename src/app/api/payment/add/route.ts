@@ -4,6 +4,31 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { sendTopUpReceipt } from '@/lib/email';
 
+/**
+ * POST /api/payment/add
+ *
+ * Tops up the calling student's own wallet.
+ *
+ * NOTE: there is no payment gateway. Credits are minted for free — this is a
+ * demo-only stand-in for a Stripe/Razorpay webhook confirming a real payment.
+ *
+ * Authentication: Requires a session with role === "STUDENT".
+ *
+ * Request body (JSON):
+ *   amount: number — credits to add; must be greater than 0
+ *
+ * Responses:
+ *   200 — { success: true, message: 'Credits added successfully' }
+ *   400 — Missing or non-positive amount
+ *   401 — No session, or the caller is not a STUDENT
+ *   404 — Session user no longer exists in the database
+ *   500 — Internal server error (try/catch fallback)
+ *
+ * Side effects:
+ *   One prisma.$transaction: increments User.credits and inserts a
+ *   Transaction row (type "TOP_UP", positive amount).
+ *   Awaits sendTopUpReceipt — see the comment at the call site for why.
+ */
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

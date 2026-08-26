@@ -4,6 +4,37 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { sendUnblockOtpEmail } from '@/lib/email';
 
+/**
+ * POST /api/user/status
+ *
+ * Card lifecycle actions for the calling user: freeze the card, request an
+ * unblock OTP by email, and redeem that OTP.
+ *
+ * A BLOCKED card cannot be charged (see /api/payment/pay) and the dashboard
+ * refuses to render its QR pass, so blocking is the "lost my phone" control.
+ *
+ * Authentication: Requires any session. Note there is no role restriction —
+ * a driver may block/unblock their own (unused) card.
+ *
+ * Request body (JSON):
+ *   action: string — "BLOCK" | "REQUEST_OTP" | "VERIFY_UNBLOCK"
+ *   otp?:   string — the 6-digit code; required when action is "VERIFY_UNBLOCK"
+ *
+ * Responses:
+ *   200 — { success: true, message, cardStatus? }
+ *   400 — Unknown action, card already ACTIVE on REQUEST_OTP, missing OTP,
+ *         wrong OTP, or expired OTP
+ *   401 — No session
+ *   404 — Session user no longer exists in the database
+ *   500 — Internal server error (try/catch fallback)
+ *
+ * Side effects:
+ *   BLOCK          — sets cardStatus to "BLOCKED".
+ *   REQUEST_OTP    — stores a 6-digit code with a 10-minute expiry and awaits
+ *                    sendUnblockOtpEmail. The await matters: on Vercel the
+ *                    function freezes once the response is sent.
+ *   VERIFY_UNBLOCK — sets cardStatus to "ACTIVE" and clears the stored OTP.
+ */
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -81,6 +112,30 @@ export async function POST(req: Request) {
   }
 }
 
+/**
+ * GET /api/user/status
+ *
+ * Returns everything the dashboard renders. This is the dashboard's only read;
+ * it is re-fetched after every action that changes the balance or card state.
+ *
+ * The caller is identified by session.user.studentId, so a user can only ever
+ * read their own record — there is no id parameter to tamper with.
+ *
+ * Authentication: Requires any session (both STUDENT and DRIVER).
+ *
+ * Request body (JSON): None.
+ *
+ * Responses:
+ *   200 — { success: true, user: { name, studentId, credits, cardStatus,
+ *           transactions } } where transactions is the 10 most recent rows,
+ *           newest first
+ *   401 — No session
+ *   404 — Session user no longer exists in the database
+ *   500 — Internal server error (try/catch fallback)
+ *
+ * Side effects:
+ *   None — read only.
+ */
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);

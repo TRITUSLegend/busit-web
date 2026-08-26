@@ -4,6 +4,32 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { sendPaymentReceipt } from '@/lib/email';
 
+/**
+ * POST /api/payment/pay
+ *
+ * Charges a student the flat shuttle fare. This is the endpoint the driver's
+ * QR scanner calls after decoding a boarding pass.
+ *
+ * The fare is the module-level `FARE` constant below (20 credits) — this file
+ * is the only place it is defined.
+ *
+ * Authentication: Requires a session with role === "DRIVER".
+ *
+ * Request body (JSON):
+ *   studentId: string — decoded from the scanned QR code
+ *
+ * Responses:
+ *   200 — { success: true, message: 'Payment successful' }
+ *   400 — Missing studentId, card is BLOCKED, or insufficient credits
+ *   401 — No session, or the caller is not a DRIVER
+ *   404 — No user with that studentId
+ *   500 — Internal server error (try/catch fallback)
+ *
+ * Side effects:
+ *   One prisma.$transaction: decrements User.credits by FARE and inserts a
+ *   Transaction row (type "PAYMENT", amount -FARE).
+ *   Awaits sendPaymentReceipt — see the comment at the call site for why.
+ */
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
