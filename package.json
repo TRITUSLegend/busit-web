@@ -1,5 +1,6 @@
 {
-  "name": "bcs-next",
+  "name": "busit-web",
+  "description": "Full-stack campus shuttle payment system — QR-code digital wallets, software-only scanning, and email receipts. Built with Next.js 16, Prisma, and NextAuth.",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,7 +8,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "type-check": "tsc --noEmit",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:seed": "prisma db seed",
     "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
