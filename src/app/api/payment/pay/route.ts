@@ -44,8 +44,10 @@ export async function POST(req: NextRequest) {
       })
     ]);
 
-    // Send email receipt asynchronously (fire and forget so it doesn't slow down the scanner)
-    sendPaymentReceipt(student.email, student.name, FARE, student.credits - FARE).catch(console.error);
+    // Must be awaited: on Vercel the serverless function is frozen as soon as the
+    // response is sent, so an un-awaited promise here would be silently dropped.
+    // sendPaymentReceipt swallows its own errors, so this never rejects.
+    await sendPaymentReceipt(student.email, student.name, FARE, student.credits - FARE);
 
     return NextResponse.json({ success: true, message: 'Payment successful' });
   } catch (error) {

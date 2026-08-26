@@ -36,8 +36,10 @@ export async function POST(req: NextRequest) {
       })
     ]);
 
-    // Send email receipt asynchronously
-    sendTopUpReceipt(user.email, user.name, amount, user.credits + amount).catch(console.error);
+    // Must be awaited: on Vercel the serverless function is frozen as soon as the
+    // response is sent, so an un-awaited promise here would be silently dropped.
+    // sendTopUpReceipt swallows its own errors, so this never rejects.
+    await sendTopUpReceipt(user.email, user.name, amount, user.credits + amount);
 
     return NextResponse.json({ success: true, message: 'Credits added successfully' });
   } catch (error) {
