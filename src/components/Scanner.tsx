@@ -9,31 +9,8 @@ export default function Scanner() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    const scanner = new Html5QrcodeScanner(
-      "reader",
-      { fps: 10, qrbox: { width: 250, height: 250 } },
-      false
-    );
-
-    scanner.render(
-      (decodedText) => {
-        if (!loading && !scannedId) {
-          setScannedId(decodedText);
-          handlePayment(decodedText);
-          scanner.pause(true);
-        }
-      },
-      (err) => {
-        // ignore noisy scanning errors
-      }
-    );
-
-    return () => {
-      scanner.clear().catch(console.error);
-    };
-  }, [loading, scannedId]);
-
+  // Declared before the effect below so the scan callback closes over it directly
+  // rather than reaching a `const` that has not been initialised yet.
   const handlePayment = async (studentId: string) => {
     setLoading(true);
     setMessage('');
@@ -65,6 +42,31 @@ export default function Scanner() {
       }, 3000);
     }
   };
+
+  useEffect(() => {
+    const scanner = new Html5QrcodeScanner(
+      "reader",
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      false
+    );
+
+    scanner.render(
+      (decodedText) => {
+        if (!loading && !scannedId) {
+          setScannedId(decodedText);
+          handlePayment(decodedText);
+          scanner.pause(true);
+        }
+      },
+      (err) => {
+        // ignore noisy scanning errors
+      }
+    );
+
+    return () => {
+      scanner.clear().catch(console.error);
+    };
+  }, [loading, scannedId]);
 
   return (
     <div className="flex flex-col items-center w-full">

@@ -13,6 +13,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Primary action button.
+   Matches the emerald "Verify" button in the dashboard and the active:scale
+   press feedback used by the login/register submit buttons.
+   Used by the "Scan Next" button in Scanner.tsx. */
+.btn-primary {
+  @apply w-full px-6 py-3 rounded-xl bg-emerald-500 text-zinc-950 text-sm font-bold
+         hover:bg-emerald-400 active:scale-[0.98] transition-all cursor-pointer;
+}
+
 /* Loader */
 .loader {
   border: 2px solid #52525b;

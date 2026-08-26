@@ -15,14 +15,8 @@ export default function Dashboard() {
   const [otpValue, setOtpValue] = useState('');
   const [otpError, setOtpError] = useState('');
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-    } else if (status === 'authenticated') {
-      fetchUserData();
-    }
-  }, [status, router]);
-
+  // Declared before the effect below so the effect closes over it directly
+  // rather than reaching a `const` that has not been initialised yet.
   const fetchUserData = async () => {
     try {
       const res = await fetch('/api/user/status');
@@ -36,6 +30,14 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    } else if (status === 'authenticated') {
+      fetchUserData();
+    }
+  }, [status, router]);
 
   const handleBlockCard = async () => {
     if (!confirm('Are you sure you want to block your card?')) return;
