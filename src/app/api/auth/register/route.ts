@@ -19,7 +19,7 @@ import { prisma } from '@/lib/prisma';
  *
  * Responses:
  *   200 — { success: true, user: { id, name } }
- *   400 — Missing required fields, or studentId/email already taken
+ *   400 — Missing required fields, invalid role, or studentId/email already taken
  *   500 — Internal server error (try/catch fallback)
  *
  * Side effects:
@@ -31,6 +31,12 @@ export async function POST(req: Request) {
 
     if (!studentId || !name || !email || !password) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // `role` is a plain string column with no DB-level constraint, so an
+    // unrecognised value would persist and match neither privilege check.
+    if (role !== undefined && role !== 'STUDENT' && role !== 'DRIVER') {
+      return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
 
     const existingUser = await prisma.user.findFirst({

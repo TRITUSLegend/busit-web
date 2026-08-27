@@ -15,11 +15,11 @@ import { sendTopUpReceipt } from '@/lib/email';
  * Authentication: Requires a session with role === "STUDENT".
  *
  * Request body (JSON):
- *   amount: number — credits to add; must be greater than 0
+ *   amount: number — credits to add; must be a positive integer
  *
  * Responses:
  *   200 — { success: true, message: 'Credits added successfully' }
- *   400 — Missing or non-positive amount
+ *   400 — Missing amount, or not a positive integer
  *   401 — No session, or the caller is not a STUDENT
  *   404 — Session user no longer exists in the database
  *   500 — Internal server error (try/catch fallback)
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
     const { amount } = await req.json();
 
-    if (!amount || amount <= 0) {
+    if (typeof amount !== 'number' || !Number.isInteger(amount) || amount <= 0) {
       return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
     }
 
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       prisma.transaction.create({
         data: {
           userId: user.id,
-          amount: amount,
+          amount,
           type: 'TOP_UP'
         }
       })
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Credits added successfully' });
   } catch (error) {
-    console.error(error);
+    console.error('Top-up error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -125,8 +125,11 @@ export default function Dashboard() {
   const handleAddCredits = async () => {
     const amountStr = prompt('Enter credits to add:');
     if (!amountStr) return;
-    const amount = parseInt(amountStr);
-    if (isNaN(amount) || amount <= 0) return alert('Invalid amount');
+    const amount = parseInt(amountStr, 10);
+    if (isNaN(amount) || amount <= 0) {
+      alert('Invalid amount');
+      return;
+    }
 
     try {
       await fetch('/api/payment/add', {

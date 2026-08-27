@@ -1,3 +1,19 @@
+/**
+ * src/lib/email.ts
+ *
+ * Transactional email senders — one shared Gmail SMTP transporter.
+ *
+ * Every sender in this file:
+ *  - no-ops silently when SMTP_EMAIL / SMTP_PASSWORD are unset, so the app runs
+ *    locally with no mail configuration;
+ *  - swallows its own errors into console.error, so it never rejects and is safe
+ *    to await inside a route handler;
+ *  - stamps dates with timeZone: 'Asia/Kolkata' — serverless defaults to UTC.
+ *
+ * Callers must await these. On Vercel the function is frozen the moment its
+ * response is sent, so an un-awaited send is silently dropped.
+ */
+
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({

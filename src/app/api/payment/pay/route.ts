@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Payment successful' });
   } catch (error) {
-    console.error(error);
+    console.error('Payment error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
