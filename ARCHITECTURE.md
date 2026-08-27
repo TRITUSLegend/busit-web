@@ -72,7 +72,8 @@ busit-web/
 │       └── email.ts         # 3 nodemailer senders with inline-styled HTML
 ├── .env.example             # Required env var template (safe to commit)
 ├── ARCHITECTURE.md          # This file
-└── README.md                # Setup + demo walkthrough
+├── README.md                # Setup + demo walkthrough
+└── next.config.ts           # Pins turbopack.root — see PROJECT_SUMMARY.md
 ```
 
 Every page under `src/app/` is a **client component** (`'use client'`). There are
