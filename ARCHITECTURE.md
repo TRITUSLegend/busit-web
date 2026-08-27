@@ -1,6 +1,6 @@
 # BUSIT — Architecture Reference
 
-> Code-accurate reference document. Last verified: 2026-08-27.
+> Code-accurate reference document. Last verified: 2026-08-27 (commit 08eb843).
 > If you change architecture, routes, or the data model, update this file.
 
 ---
@@ -71,7 +71,9 @@ busit-web/
 │       ├── auth.ts          # NextAuth authOptions (extracted for reuse)
 │       └── email.ts         # 3 nodemailer senders with inline-styled HTML
 ├── .env.example             # Required env var template (safe to commit)
+├── AGENTS.md                # Agent entry point: Next.js 16 rules + doc pointers
 ├── ARCHITECTURE.md          # This file
+├── PROJECT_SUMMARY.md       # Agent brief: non-obvious facts + conventions
 ├── README.md                # Setup + demo walkthrough
 └── next.config.ts           # Pins turbopack.root — see PROJECT_SUMMARY.md
 ```
