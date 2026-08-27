@@ -1,6 +1,6 @@
 # Agent Brief — BUSIT
 
-> Pointed to from `AGENTS.md`, which coding agents read at session start. Kept short.
+> Agent brief for this repo — read it before changing anything. Kept deliberately short.
 > **[ARCHITECTURE.md](./ARCHITECTURE.md) is the canonical reference** — stack, data
 > model, API contracts, auth flow, scan flow, and known gaps all live there. Read it
 > before changing anything; do not duplicate its content back into this file.

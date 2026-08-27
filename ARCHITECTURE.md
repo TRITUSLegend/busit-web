@@ -71,7 +71,6 @@ busit-web/
 │       ├── auth.ts          # NextAuth authOptions (extracted for reuse)
 │       └── email.ts         # 3 nodemailer senders with inline-styled HTML
 ├── .env.example             # Required env var template (safe to commit)
-├── AGENTS.md                # Agent entry point: Next.js 16 rules + doc pointers
 ├── ARCHITECTURE.md          # This file
 ├── PROJECT_SUMMARY.md       # Agent brief: non-obvious facts + conventions
 ├── README.md                # Setup + demo walkthrough

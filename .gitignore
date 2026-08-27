@@ -62,3 +62,7 @@ next-env.d.ts
 # Prisma generated client
 /src/generated/prisma
 prisma/generated/
+
+# Local-only agent instructions — guidance for coding agents, not application
+# code. Kept on disk so local sessions read it; deliberately not tracked.
+AGENTS.md
