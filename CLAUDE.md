@@ -1,2 +1,0 @@
-@AGENTS.md
-@PROJECT_SUMMARY.md
